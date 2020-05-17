@@ -1,42 +1,39 @@
 import React, { Component } from 'react';
-import logo from './logo.svg';
 import './App.css';
+import ProductServices from './services/products';
+import Products from './components/products'
 
 class App extends Component {
   constructor(props) {
     super(props);
-
     this.state = {
-      data: null
+      products: []
     };
+    this.ProductServices = new ProductServices();
   }
 
   componentDidMount() {
-    fetch('/products')
-      .then(response => response.json())
-      .then(json => {
-        setTimeout(_ => {
-          this.setState({
-            data: json
-          });
-        }, 2000);
+    this.fetchProducts()
+  }
 
-      });
+  fetchProducts = () => {
+    this.ProductServices.getProducts().then(products => this.setState({ products }));
   }
 
   render() {
+    const { products } = this.state;
+
     return (
       <div className="App">
 
         <div className="App-header">
-          <img src={logo} className="App-logo" alt="logo" />
           <h2>Welcome to React</h2>
         </div>
 
         <p className="App-intro">
           To get started, edit <code>src/App.js</code> and save to reload.
         </p>
-        {JSON.stringify(this.state.data)}
+        <Products dataArray={products} />
 
       </div>
     );
