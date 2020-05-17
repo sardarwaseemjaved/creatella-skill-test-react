@@ -1,4 +1,4 @@
 export default {
-    PRODUCTS_URL: "/products",
-    ADS_URL: "/ads"
+    PRODUCTS_URL: "/api/products?",
+    ADS_URL: "/api/ads?"
 }
