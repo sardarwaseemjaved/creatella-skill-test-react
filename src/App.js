@@ -4,13 +4,16 @@ import ProductServices from './services/products';
 import AdsServices from './services/ads';
 import Products from './components/products'
 import Spinner from './components/spinner'
-import SORT_TYPES from './constants/sortTypes'
+import SORT_BY_TYPES, { SORT_TYPES } from './constants/sortTypes'
+import Select from './components/select'
+import { sortArray } from './components/array';
 
 class App extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      sortBy: SORT_TYPES[0],
+      sort: SORT_TYPES[0],
+      sortBy: SORT_BY_TYPES[0],
       page: 1,
       products: [],
       adUrls: [],
@@ -99,9 +102,13 @@ class App extends Component {
       .catch(error => console.log(error.message))
   }
 
-  handleSortingChange = async (event) => {
+  handleSortByChange = async (event) => {
     await this.setState({ sortBy: event.target.value, products: [] });
     this.fetchProducts()
+  }
+
+  handleSortChange = async (event) => {
+    this.setState({ sort: event.target.value });
   }
 
   trackScrolling = () => {
@@ -124,9 +131,7 @@ class App extends Component {
   }
 
   render() {
-    const { products, loadingProducts, endOfCatalogue, adUrls, sortBy } = this.state;
-    console.log('adUrls:', JSON.stringify(adUrls));
-
+    const { products, loadingProducts, endOfCatalogue, adUrls, sortBy, sort } = this.state;
     return (
       <div className="App">
 
@@ -137,19 +142,29 @@ class App extends Component {
             Be sure to peruse our selection of ascii faces in an exciting range of sizes and prices.
           </p>
         </div>
-        {console.log(adUrls[0])}
         {
           adUrls.length ?
             <img alt="advert" src={adUrls[0]} ></img>
             : null
         }
+
+        <label>Sort:</label>
+        <Select
+          dataArray={SORT_TYPES}
+          value={sort}
+          onChange={this.handleSortChange} />
+
         <label>Sort by:</label>
-        <select value={sortBy} onChange={this.handleSortingChange} id="sort-by">
-          {
-            SORT_TYPES.map(type => <option value={type}>{type}</option>)
-          }
-        </select>
-        <Products dataArray={products} adList={adUrls} />
+        <Select dataArray={SORT_BY_TYPES} value={sortBy} onChange={this.handleSortByChange} />
+
+        <Products
+          dataArray={sortArray({
+            array: products,
+            sortByProperty: sortBy,
+            isAscending: sort == 'ascending'
+          })}
+          adList={adUrls}
+        />
 
         {loadingProducts && <Spinner />}
 

@@ -11,11 +11,9 @@ export function calculateDaysAgo(dateStr, dateStr2 = new Date()) {
     today.setHours(0, 0, 0, 0);
 
     var diff = (+today - +createdOn) / msInDay;
-    return diff <= 0
-        ? "Today"
-        : diff == 1
-            ? "Yesterday"
-            : diff + " " + "days ago";
+    return diff > 6
+        ? date_to_dd_Mon_yr(dateStr)
+        : diff + " " + "days ago";
 }
 // 04 Feb 20
 export const date_to_dd_Mon_yr = inputDate => {
@@ -24,11 +22,10 @@ export const date_to_dd_Mon_yr = inputDate => {
     }
     inputDate = inputDate.substr(0, 10);
     const date = new Date(inputDate);
-    if (date.toString() == "Invalid Date") {
+    if (date.toString() === "Invalid Date") {
         return undefined;
     }
-    const dateOfMonth =
-        date.getDate() > 9 ? date.getDate() : "0" + date.getDate();
+    const dateOfMonth = date.getDate() > 9 ? date.getDate() : "0" + date.getDate();
     const month = MONTH_NAMES[date.getMonth()].substr(0, 3);
     const year = date
         .getFullYear()

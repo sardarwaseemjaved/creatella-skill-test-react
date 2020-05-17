@@ -3,3 +3,7 @@ export default [
     'id',
     'size'
 ]
+export const SORT_TYPES = [
+    'ascending',
+    'desending'
+]

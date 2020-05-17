@@ -1,5 +1,6 @@
 import React from 'react';
 import { date_to_dd_Mon_yr, calculateDaysAgo } from '../utils/date';
+import { convertPrice } from '../utils/price';
 export default function ({ dataArray = [], adList = [] }) {
     let adNo = 0;
     return (
@@ -15,22 +16,22 @@ export default function ({ dataArray = [], adList = [] }) {
                         showAd = false;
                     }
                     return (
-                        <div> 
-                            {
-                                showAd && adList.length && adList[adNo] ?
-                                    <img src={adList[adNo]}></img>
-                                    : null
-                            }
+                        <div>
                             <div id="single-product" key={index} >
                                 <p style={{ fontSize: item.size + 'px' }}>{item.face}</p>
                                 <div>
                                     <p>Product ID:{item.id}</p>
                                     <p>Index:{index}</p>
-                                    <p>Price:{item.size}</p>
+                                    <p>Price:{convertPrice(item.size)}</p>
                                     <p>Date:{calculateDaysAgo(item.date)}</p>
                                     <p>Size:{item.size}</p>
                                 </div>
                             </div>
+                            {
+                                showAd && adList.length && adList[adNo] ?
+                                    <img src={adList[adNo]}></img>
+                                    : null
+                            }
                         </div>
                     )
                 })
