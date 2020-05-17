@@ -1,7 +1,7 @@
 import config from '../config'
 import { handleError, handleResponseError } from '../utils/error'
 class ProductServices {
-    async getProducts(page, sort, limit = 100) {
+    async getProducts(page, sort, limit = 20) {
 
         let url = this.createUrl(page, sort, limit);
 

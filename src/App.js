@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import './App.css';
 import ProductServices from './services/products';
+import AdsServices from './services/ads';
 import Products from './components/products'
 import Spinner from './components/spinner'
 import SORT_TYPES from './constants/sortTypes'
@@ -9,17 +10,20 @@ class App extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      sort: SORT_TYPES[0],
+      sortBy: SORT_TYPES[0],
       page: 1,
       products: [],
+      adUrls: [],
       loadingProducts: false,
       endOfCatalogue: false
     };
     this.ProductServices = new ProductServices();
+    this.AdsServices = new AdsServices()
   }
 
   componentDidMount() {
     this.fetchProducts()
+    this.fetchRandomAd()
     document.addEventListener('scroll', this.trackScrolling);
   }
 
@@ -27,16 +31,53 @@ class App extends Component {
     document.removeEventListener('scroll', this.trackScrolling);
   }
 
+  fetchRandomAd = (index) => {
+    this.AdsServices.getAdUrl()
+      .then(nextAdUrl => {
+        if (!nextAdUrl)
+          return false
+        console.log('nextAdUrl:', nextAdUrl)
+        const { adUrls } = this.state;
+        let prevAdUrl = null;
+
+        if (adUrls.length) {
+          prevAdUrl = adUrls[adUrls.length - 1]
+        }
+
+        if (prevAdUrl === nextAdUrl) {  //don't show same ad twice in a row
+          return this.fetchRandomAd()
+        }
+        else {
+          this.setState({ adUrls: [...adUrls, nextAdUrl] })
+        }
+
+        // if (!nextAd)
+        // return alert('Make sure Ads blocker is disabled.');
+        // let nextAdUrl = URL.createObjectURL(nextAd) // create url to use as image source
+        // console.log('nextAdUrl:', nextAdUrl, 'lastAdUrl:', lastAdUrl, lastAdUrl == lastAdUrl)
+        // if (lastAdUrl && (lastAdUrl === nextAdUrl)) { //don't show same ad twice in a row
+        //   console.log('lastAdUrl:', lastAdUrl && (lastAdUrl === nextAdUrl))
+        // return this.fetchRandomAd();
+        // }
+        // else {
+        //   this.setState({ lastAdUrl: nextAdUrl })
+        //   return nextAdUrl;
+        // }
+      })
+
+  }
+
   fetchProducts = () => {
 
-    const { sort, page, products } = this.state;
+    const { sortBy, page, products } = this.state;
 
     this.setState({ loadingProducts: true })
 
-    this.ProductServices.getProducts(page, sort)
+    this.ProductServices.getProducts(page, sortBy)
       .then(nextPageProducts => {
         console.log(nextPageProducts.length + ' products loaded for page ' + page);
         if (nextPageProducts.length > 0) {
+          this.fetchRandomAd();//Ad to be shown after this batch
           this.setState({
             products: [...products, ...nextPageProducts],
             page: page + 1,
@@ -58,8 +99,13 @@ class App extends Component {
       .catch(error => console.log(error.message))
   }
 
+  handleSortingChange = async (event) => {
+    await this.setState({ sortBy: event.target.value, products: [] });
+    this.fetchProducts()
+  }
+
   trackScrolling = () => {
-    const wrappedElement = document.getElementById('products');
+    const wrappedElement = document.getElementById('root');
     if (this.isBottom(wrappedElement)) {
       console.log('bottom reached');
 
@@ -78,26 +124,38 @@ class App extends Component {
   }
 
   render() {
-    const { products, loadingProducts, endOfCatalogue } = this.state;
+    const { products, loadingProducts, endOfCatalogue, adUrls, sortBy } = this.state;
+    console.log('adUrls:', JSON.stringify(adUrls));
 
     return (
       <div className="App">
 
         <div className="App-header">
-          <h2>Welcome to React</h2>
+          <h2>Welcome to Products Grid</h2>
+          <p className="App-intro">
+            Here you're sure to find a bargain on some of the finest ascii available to purchase.
+            Be sure to peruse our selection of ascii faces in an exciting range of sizes and prices.
+          </p>
         </div>
-
-        <p className="App-intro">
-          To get started, edit <code>src/App.js</code> and save to reload.
-        </p>
-
-        <Products dataArray={products} />
+        {console.log(adUrls[0])}
+        {
+          adUrls.length ?
+            <img alt="advert" src={adUrls[0]} ></img>
+            : null
+        }
+        <label>Sort by:</label>
+        <select value={sortBy} onChange={this.handleSortingChange} id="sort-by">
+          {
+            SORT_TYPES.map(type => <option value={type}>{type}</option>)
+          }
+        </select>
+        <Products dataArray={products} adList={adUrls} />
 
         {loadingProducts && <Spinner />}
 
         {endOfCatalogue && <span>~ end of catalogue ~</span>}
 
-      </div>
+      </div >
     );
   }
 }
