@@ -161,7 +161,7 @@ class App extends Component {
           dataArray={sortArray({
             array: products,
             sortByProperty: sortBy,
-            isAscending: sort == 'ascending'
+            isAscending: sort == 'ascending' 
           })}
           adList={adUrls}
         />
