@@ -15,6 +15,7 @@ class App extends Component {
       sort: SORT_TYPES[0],
       sortBy: SORT_BY_TYPES[0],
       page: 1,
+      premptiveProducts: [],
       products: [],
       adUrls: [],
       loadingProducts: false,
@@ -25,7 +26,7 @@ class App extends Component {
   }
 
   componentDidMount() {
-    this.fetchProducts()
+    this.fetchProducts(true) // true for callAgain which will be used for preemptively fetching next products page items
     this.fetchRandomAd()
     document.addEventListener('scroll', this.trackScrolling);
   }
@@ -57,39 +58,46 @@ class App extends Component {
 
   }
 
-  fetchProducts = () => {
+  fetchProducts = async (callAgain) => {
+    let premptiveProductsLoaded = false;
+    const { sortBy, page, products, premptiveProducts } = this.state;
 
-    const { sortBy, page, products } = this.state;
-
-    this.setState({ loadingProducts: true })
+    await this.setState({
+      products: [...products, ...premptiveProducts],
+      premptiveProducts: [],
+      loadingProducts: true
+    })
 
     this.ProductServices.getProducts(page, sortBy)
-      .then(nextPageProducts => {
+      .then(async nextPageProducts => {
         if (nextPageProducts.length > 0) {
           this.fetchRandomAd();//Ad to be shown after this batch
-          this.setState({
-            products: [...products, ...nextPageProducts],
+          await this.setState({
+            premptiveProducts: nextPageProducts,
             page: page + 1,
             loadingProducts: false
           })
+          callAgain && this.fetchProducts()
+          // commentId: com-listner-2
+          // this will add scroll end event listner again
+          // which was removed by com-listner-1
           document.addEventListener('scroll', this.trackScrolling);
         }
         else {
           this.setState({
             endOfCatalogue: true,
             page: page + 1,
-            loadingProducts: false
+            loadingProducts: false,
+            premptiveProducts: []
           })
         }
-        // commentId: com-listner-2
-        // this will add scroll end event listner again
-        // which was removed by com-listner-1
       })
       .catch(error => console.log(error.message))
+
   }
 
   handleSortByChange = async (event) => {
-    await this.setState({ sortBy: event.target.value, products: [] });
+    await this.setState({ sortBy: event.target.value, products: [], page: 1 });
     this.fetchProducts()
   }
 
@@ -140,12 +148,12 @@ class App extends Component {
 
         </header>
 
-        <div className="d-flex flex-row-reverse mx-2">
-          <div id="sort mx-1">
+        <div className="d-flex flex-row-reverse my-3">
+          <div id="sort" className="mx-1">
             <Select dataArray={SORT_TYPES} value={sort} onChange={this.handleSortChange} />
           </div>
 
-          <div id="sort-by mx-1">
+          <div id="sort-by" className="mx-1">
             <Select dataArray={SORT_BY_TYPES} value={sortBy} onChange={this.handleSortByChange} />
           </div>
           <label className="m-1">Sort:</label>
