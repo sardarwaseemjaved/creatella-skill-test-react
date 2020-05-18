@@ -133,42 +133,58 @@ class App extends Component {
   render() {
     const { products, loadingProducts, endOfCatalogue, adUrls, sortBy, sort } = this.state;
     return (
-      <div className="App">
+      <div className="container-fluid">
 
-        <div className="App-header">
-          <h2>Welcome to Products Grid</h2>
-          <p className="App-intro">
-            Here you're sure to find a bargain on some of the finest ascii available to purchase.
-            Be sure to peruse our selection of ascii faces in an exciting range of sizes and prices.
+        <header>
+
+          <div className="App App-header">
+            <h2>Welcome to Products Grid</h2>
+            <p className="App-intro">
+              Here you're sure to find a bargain on some of the finest ascii available to purchase.
+              Be sure to peruse our selection of ascii faces in an exciting range of sizes and prices.
           </p>
+          </div>
+
+          <div className="App">
+            <p>But first, a word from our sponsors:</p>
+            {
+              adUrls.length ?
+                <img alt="advert" src={adUrls[0]} ></img>
+                : null
+            }
+          </div>
+
+        </header>
+
+        <div className="d-flex flex-row-reverse">
+          <div id="sort">
+            <Select dataArray={SORT_TYPES} value={sort} onChange={this.handleSortChange} />
+          </div>
+
+          <div id="sort-by">
+            <Select dataArray={SORT_BY_TYPES} value={sortBy} onChange={this.handleSortByChange} />
+          </div>
+          <label>Sort:</label>
         </div>
-        {
-          adUrls.length ?
-            <img alt="advert" src={adUrls[0]} ></img>
-            : null
-        }
 
-        <label>Sort:</label>
-        <Select
-          dataArray={SORT_TYPES}
-          value={sort}
-          onChange={this.handleSortChange} />
+        <section id="products-container border">
+          <Products
+            dataArray={sortArray({
+              array: products,
+              sortByProperty: sortBy,
+              isAscending: sort === 'ascending'
+            })}
+            adList={adUrls}
+          />
+        </section>
 
-        <label>Sort by:</label>
-        <Select dataArray={SORT_BY_TYPES} value={sortBy} onChange={this.handleSortByChange} />
+        <div className="d-block">
+          {loadingProducts && <Spinner />}
+        </div>
 
-        <Products
-          dataArray={sortArray({
-            array: products,
-            sortByProperty: sortBy,
-            isAscending: sort == 'ascending' 
-          })}
-          adList={adUrls}
-        />
-
-        {loadingProducts && <Spinner />}
-
-        {endOfCatalogue && <span>~ end of catalogue ~</span>}
+        <div className="d-block">
+          {endOfCatalogue && <span>~ end of catalogue ~</span>}
+        </div>
 
       </div >
     );
