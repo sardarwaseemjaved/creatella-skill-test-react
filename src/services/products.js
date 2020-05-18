@@ -5,8 +5,6 @@ class ProductServices {
 
         let url = this.createUrl(page, sort, limit);
 
-        console.log('url:', url)
-
         return fetch(url)
             .then(response => {
                 if (!response.ok) {

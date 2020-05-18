@@ -2,8 +2,7 @@ import config from '../config'
 import { handleError, handleResponseError } from '../utils/error'
 class AdsServices { 
     async getAdUrl() {
-        let url = config.ADS_URL + "r=" + Math.floor(Math.random() * 1000)
-        console.log('url:', url); 
+        let url = config.ADS_URL + "r=" + Math.floor(Math.random() * 1000) 
         return fetch(url)
             .then(response => {
                 if (!response.ok) {

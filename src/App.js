@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import './App.css';
+import './assets/styles.css';
 import ProductServices from './services/products';
 import AdsServices from './services/ads';
 import Products from './components/products'
@@ -37,9 +37,9 @@ class App extends Component {
   fetchRandomAd = (index) => {
     this.AdsServices.getAdUrl()
       .then(nextAdUrl => {
-        if (!nextAdUrl)
+        if (!nextAdUrl) {
           return false
-        console.log('nextAdUrl:', nextAdUrl)
+        }
         const { adUrls } = this.state;
         let prevAdUrl = null;
 
@@ -53,19 +53,6 @@ class App extends Component {
         else {
           this.setState({ adUrls: [...adUrls, nextAdUrl] })
         }
-
-        // if (!nextAd)
-        // return alert('Make sure Ads blocker is disabled.');
-        // let nextAdUrl = URL.createObjectURL(nextAd) // create url to use as image source
-        // console.log('nextAdUrl:', nextAdUrl, 'lastAdUrl:', lastAdUrl, lastAdUrl == lastAdUrl)
-        // if (lastAdUrl && (lastAdUrl === nextAdUrl)) { //don't show same ad twice in a row
-        //   console.log('lastAdUrl:', lastAdUrl && (lastAdUrl === nextAdUrl))
-        // return this.fetchRandomAd();
-        // }
-        // else {
-        //   this.setState({ lastAdUrl: nextAdUrl })
-        //   return nextAdUrl;
-        // }
       })
 
   }
@@ -78,7 +65,6 @@ class App extends Component {
 
     this.ProductServices.getProducts(page, sortBy)
       .then(nextPageProducts => {
-        console.log(nextPageProducts.length + ' products loaded for page ' + page);
         if (nextPageProducts.length > 0) {
           this.fetchRandomAd();//Ad to be shown after this batch
           this.setState({
@@ -114,8 +100,6 @@ class App extends Component {
   trackScrolling = () => {
     const wrappedElement = document.getElementById('root');
     if (this.isBottom(wrappedElement)) {
-      console.log('bottom reached');
-
       // commentId: com-listner-1
       // remove bottom reached listner or it will keep calling trackScrolling function
       // and will call api multiple times although user did't want to load more products
@@ -156,15 +140,15 @@ class App extends Component {
 
         </header>
 
-        <div className="d-flex flex-row-reverse">
-          <div id="sort">
+        <div className="d-flex flex-row-reverse mx-2">
+          <div id="sort mx-1">
             <Select dataArray={SORT_TYPES} value={sort} onChange={this.handleSortChange} />
           </div>
 
-          <div id="sort-by">
+          <div id="sort-by mx-1">
             <Select dataArray={SORT_BY_TYPES} value={sortBy} onChange={this.handleSortByChange} />
           </div>
-          <label>Sort:</label>
+          <label className="m-1">Sort:</label>
         </div>
 
         <section id="products-container border">

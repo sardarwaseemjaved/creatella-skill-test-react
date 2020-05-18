@@ -19,23 +19,34 @@ export default function ({ dataArray = [], adList = [] }) {
                         <Fragment>
                             <div className={"col-sm-4 mb-2 mt-2"} id="single-product"  >
                                 <div className="card h-100">
-                                    <div className="d-flex justify-content-center h-40">
+                                    {/* <div class="fixed-top">
+                                        <h3>{convertPrice(item.price)}</h3>
+                                    </div> */}
+                                    <sup><span class="badge badge-secondary"><h3>{convertPrice(item.price)}</h3></span></sup>
+                                    <div className="d-flex justify-content-center">
                                         <p className=" mx-auto" style={{ fontSize: item.size + 'px' }}>{item.face}</p>
                                     </div>
                                     <div className="card-body">
-                                        {/* <h5 className="card-title App">{convertPrice(item.price)}</h5> */}
-                                        <p class="text-muted">{item.id}</p>
+                                        <div className="row">
+                                            <div className="col h-auto d-inline-block">
+                                                <p className="text-muted mx-auto"><strong>{item.id}</strong></p>
+                                            </div>
+                                            {/* <div className="col">
+                                                <h2>{convertPrice(item.price)}</h2>
+                                            </div> */}
+                                        </div>
                                         <div className="row">
                                             <div className="col">
-                                                <p class="text-muted">Price:<strong>{convertPrice(item.price)}</strong></p>
+                                                <strong>Size</strong>
+                                                <p>{item.size}</p>
                                             </div>
                                             <div className="col">
-                                                <p class="text-muted">Size:<strong>{item.size}</strong></p>
+                                                <strong>Posted</strong>
+                                                <p >{calculateDaysAgo(item.date)}</p>
                                             </div>
                                         </div>
-                                        <p className="card-text"><small class="text-muted">{calculateDaysAgo(item.date)}</small></p>
                                     </div>
-                                    <button class="btn card-footer">
+                                    <button className="btn card-footer">
                                         Add to cart
                                     </button>
                                 </div>
